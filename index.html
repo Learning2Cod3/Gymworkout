@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101114" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Comeback 12" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Comeback 12</title>
+  <style>
+    :root{
+      --bg:#0c0d10; --card:#17191f; --card2:#20232b; --text:#f5f7fb; --muted:#a9afbc;
+      --accent:#7df56b; --accent2:#55c9ff; --danger:#ff6b6b; --border:#2b2f39;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0a0b0e,#12151b);color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .app{max-width:720px;margin:auto;min-height:100vh;padding:18px 14px 92px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .brand h1{font-size:24px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .badge{background:var(--accent);color:#071007;font-weight:800;padding:8px 10px;border-radius:999px;font-size:12px}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;position:sticky;top:0;z-index:5;
+      padding:8px 0;background:rgba(12,13,16,.92);backdrop-filter:blur(10px)}
+    .tab{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:12px;
+      padding:10px 6px;font-weight:700;font-size:12px}
+    .tab.active{background:var(--accent);color:#071007;border-color:var(--accent)}
+    .section{display:none}.section.active{display:block}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin:12px 0;
+      box-shadow:0 12px 30px rgba(0,0,0,.18)}
+    .card h2,.card h3{margin-top:0}.muted{color:var(--muted)} .tiny{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .metric{background:var(--card2);padding:12px;border-radius:14px}
+    .metric b{display:block;font-size:20px;margin-top:4px}
+    button,.btn{cursor:pointer}
+    .primary{width:100%;padding:13px;border:0;border-radius:13px;background:var(--accent);color:#071007;
+      font-weight:900;font-size:15px}
+    .secondary{width:100%;padding:11px;border:1px solid var(--border);border-radius:13px;background:var(--card2);
+      color:var(--text);font-weight:800}
+    select,input,textarea{width:100%;background:#0f1116;border:1px solid var(--border);color:var(--text);border-radius:10px;
+      padding:10px;font-size:15px}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+    .exercise{padding:13px 0;border-top:1px solid var(--border)}
+    .exercise:first-child{border-top:0}
+    .exhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .exhead b{font-size:15px}.target{font-size:12px;color:var(--accent2)}
+    .setrow{display:grid;grid-template-columns:34px 1fr 1fr 42px;gap:7px;align-items:center;margin-top:8px}
+    .setrow input{padding:8px}.done{height:32px;width:32px;accent-color:var(--accent)}
+    .weekbar{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+    .weekbtn{padding:9px 0;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-weight:700}
+    .weekbtn.active{background:var(--accent2);color:#06121a}
+    .progress{height:10px;background:#272b34;border-radius:99px;overflow:hidden}
+    .progress span{height:100%;display:block;background:var(--accent);width:0}
+    .note{border-left:3px solid var(--accent2);padding-left:10px;color:#dce8f3}
+    .danger{border-left:3px solid var(--danger);padding-left:10px}
+    .install{display:none;margin-bottom:10px}
+    .footer{font-size:11px;color:#7f8795;text-align:center;margin-top:24px}
+    @media(min-width:600px){.grid.three{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><h1>COMEBACK 12</h1><p>Rebuild muscle. Lose the gut. Stay consistent.</p></div>
+    <div class="badge">12 WEEKS</div>
+  </header>
+
+  <button id="installBtn" class="primary install">Install App</button>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="today">Today</button>
+    <button class="tab" data-tab="plan">Plan</button>
+    <button class="tab" data-tab="progress">Progress</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <section id="today" class="section active">
+    <div class="card">
+      <div class="grid">
+        <div class="metric"><span class="tiny">CURRENT WEEK</span><b id="weekMetric">1</b></div>
+        <div class="metric"><span class="tiny">STEP TARGET</span><b id="stepMetric">6,000</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>Choose today's workout</label>
+      <select id="workoutSelect"></select>
+      <p id="phaseText" class="muted"></p>
+      <div id="exerciseList"></div>
+      <button id="saveWorkout" class="primary">Save Workout</button>
+      <p id="saveMsg" class="tiny"></p>
+    </div>
+
+    <div class="card">
+      <h3>Today's targets</h3>
+      <div class="grid three">
+        <div class="metric"><span class="tiny">PROTEIN</span><b>190g</b></div>
+        <div class="metric"><span class="tiny">CALORIES</span><b>2,600</b></div>
+        <div class="metric"><span class="tiny">WATER</span><b>3+ L</b></div>
+      </div>
+      <p class="tiny">Calories are a starting estimate. Use the 2-week weight trend to adjust.</p>
+    </div>
+  </section>
+
+  <section id="plan" class="section">
+    <div class="card">
+      <h2>12-Week Plan</h2>
+      <p class="muted">Select a week to see the training phase, cardio, and step target.</p>
+      <div id="weekButtons" class="weekbar"></div>
+      <div id="weekDetails" style="margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <h3>Progression rule</h3>
+      <p class="note">Stay 2–4 reps from failure in Weeks 1–2. When you can hit the top of the rep range on every set with good form, add 5 lb to upper-body moves or 5–10 lb to lower-body/machine moves next time.</p>
+    </div>
+  </section>
+
+  <section id="progress" class="section">
+    <div class="card">
+      <h2>Check-in</h2>
+      <div class="grid">
+        <div><label>Weight (lb)</label><input id="weight" type="number" inputmode="decimal" placeholder="260"></div>
+        <div><label>Waist (in)</label><input id="waist" type="number" inputmode="decimal" placeholder="e.g. 42"></div>
+        <div><label>Protein (g)</label><input id="protein" type="number" inputmode="numeric" placeholder="190"></div>
+        <div><label>Steps</label><input id="steps" type="number" inputmode="numeric" placeholder="6000"></div>
+      </div>
+      <div style="margin-top:10px"><label>Notes</label><textarea id="notes" rows="3" placeholder="Energy, soreness, sleep, wins..."></textarea></div>
+      <button id="saveCheckin" class="primary" style="margin-top:10px">Save Check-in</button>
+    </div>
+    <div class="card">
+      <h3>Consistency</h3>
+      <div class="progress"><span id="consistencyBar"></span></div>
+      <p id="consistencyText" class="tiny"></p>
+      <div id="history"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="section">
+    <div class="card">
+      <h2>Program settings</h2>
+      <label>Current week</label>
+      <select id="weekSelect"></select>
+      <button id="resetBtn" class="secondary" style="margin-top:12px">Reset all app data</button>
+    </div>
+    <div class="card">
+      <h3>Safety</h3>
+      <p class="danger">Because you're returning after a long layoff, don't max out or train through chest pain, fainting, severe unexplained shortness of breath, or sharp joint pain. Get medical care for concerning symptoms.</p>
+      <p class="tiny">This tracker is a fitness planning tool, not medical diagnosis or treatment.</p>
+    </div>
+  </section>
+
+  <div class="footer">Data stays on this device in your browser storage unless you clear/reset it.</div>
+</div>
+
+<script>
+const plans = {
+  1:{phase:"Re-entry",steps:6000,cardio:"2 × 15 min easy incline walk",days:["Full Body A","Full Body B","Full Body A"]},
+  2:{phase:"Re-entry",steps:6500,cardio:"2 × 20 min easy/moderate cardio",days:["Full Body B","Full Body A","Full Body B"]},
+  3:{phase:"Foundation",steps:7000,cardio:"2 × 20 min Zone-2 style cardio",days:["Full Body A","Full Body B","Full Body A"]},
+  4:{phase:"Foundation",steps:7000,cardio:"2 × 25 min Zone-2 style cardio",days:["Full Body B","Full Body A","Full Body B"]},
+  5:{phase:"Build",steps:7500,cardio:"2 × 25 min easy/moderate cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+  6:{phase:"Build",steps:8000,cardio:"2 × 25–30 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+  7:{phase:"Build",steps:8000,cardio:"2 × 30 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+  8:{phase:"Build / easier week",steps:8000,cardio:"2 × 25 min easy cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+  9:{phase:"Cut + Strength",steps:8500,cardio:"3 × 25 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+ 10:{phase:"Cut + Strength",steps:9000,cardio:"3 × 25–30 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+ 11:{phase:"Cut + Strength",steps:9000,cardio:"3 × 30 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]},
+ 12:{phase:"Finish Strong",steps:9000,cardio:"3 × 30 min cardio",days:["Upper A","Lower A","Upper B","Lower B"]}
+};
+
+const workouts = {
+ "Full Body A":[
+  ["Leg Press","2–3","8–12"],["Machine Chest Press","2–3","8–12"],["Lat Pulldown","2–3","8–12"],
+  ["Seated Leg Curl","2–3","10–15"],["Seated Cable Row","2–3","8–12"],["Machine Shoulder Press","2","8–12"],
+  ["Cable Curl","1–2","10–15"],["Triceps Pressdown","1–2","10–15"]
+ ],
+ "Full Body B":[
+  ["Goblet Squat or Hack Squat","2–3","8–12"],["Incline Dumbbell Press","2–3","8–12"],["Chest-Supported Row","2–3","8–12"],
+  ["Romanian Deadlift (light)","2–3","8–10"],["Neutral-Grip Pulldown","2–3","10–12"],["Lateral Raise","2","12–15"],
+  ["Hammer Curl","1–2","10–15"],["Cable Triceps Extension","1–2","10–15"]
+ ],
+ "Upper A":[
+  ["Machine or DB Bench Press","3","6–10"],["Lat Pulldown","3","8–12"],["Incline DB Press","3","8–12"],
+  ["Seated Cable Row","3","8–12"],["Lateral Raise","3","12–20"],["Cable Curl","2","10–15"],["Triceps Pressdown","2","10–15"]
+ ],
+ "Lower A":[
+  ["Leg Press","3","8–12"],["Romanian Deadlift","3","8–10"],["Leg Curl","3","10–15"],
+  ["Leg Extension","2","10–15"],["Standing Calf Raise","3","10–15"],["Plank","3","30–60 sec"]
+ ],
+ "Upper B":[
+  ["Incline Machine/DB Press","3","8–12"],["Chest-Supported Row","3","8–12"],["Machine Shoulder Press","3","8–12"],
+  ["Neutral-Grip Pulldown","3","8–12"],["Cable Fly","2","12–15"],["Hammer Curl","2","10–15"],["Overhead Triceps Extension","2","10–15"]
+ ],
+ "Lower B":[
+  ["Hack Squat or Goblet Squat","3","8–12"],["Hip Hinge or RDL","3","8–10"],["Seated Leg Curl","3","10–15"],
+  ["Walking Lunge","2","8–10/leg"],["Seated Calf Raise","3","10–15"],["Cable Crunch","3","10–15"]
+ ]
+};
+
+let currentWeek = +(localStorage.getItem("comeback_week") || 1);
+let deferredPrompt;
+
+function storageKey(){return "comeback_workout_"+currentWeek+"_"+document.getElementById("workoutSelect").value}
+
+function buildWeekSelectors(){
+  const wb=document.getElementById("weekButtons"); wb.innerHTML="";
+  for(let i=1;i<=12;i++){
+    const b=document.createElement("button"); b.className="weekbtn"+(i===currentWeek?" active":""); b.textContent=i;
+    b.onclick=()=>{currentWeek=i;localStorage.setItem("comeback_week",i);renderAll()}; wb.appendChild(b);
+  }
+  const ws=document.getElementById("weekSelect"); ws.innerHTML="";
+  for(let i=1;i<=12;i++){let o=document.createElement("option");o.value=i;o.textContent="Week "+i;ws.appendChild(o)}
+  ws.value=currentWeek; ws.onchange=()=>{currentWeek=+ws.value;localStorage.setItem("comeback_week",currentWeek);renderAll()}
+}
+
+function buildWorkoutSelect(){
+  const sel=document.getElementById("workoutSelect"); sel.innerHTML="";
+  plans[currentWeek].days.forEach((d,idx)=>{let o=document.createElement("option");o.value=d;o.textContent=(idx+1)+". "+d;sel.appendChild(o)});
+  sel.onchange=renderWorkout;
+}
+
+function renderWorkout(){
+  const name=document.getElementById("workoutSelect").value;
+  const list=document.getElementById("exerciseList"); list.innerHTML="";
+  const saved=JSON.parse(localStorage.getItem(storageKey())||"{}");
+  workouts[name].forEach((ex,ei)=>{
+    const wrap=document.createElement("div");wrap.className="exercise";
+    const head=document.createElement("div");head.className="exhead";
+    head.innerHTML=`<b>${ex[0]}</b><span class="target">${ex[1]} sets × ${ex[2]}</span>`;
+    wrap.appendChild(head);
+    let setCount=parseInt(ex[1])||2;
+    if(currentWeek<=2 && setCount>2) setCount=2;
+    for(let s=1;s<=setCount;s++){
+      const row=document.createElement("div");row.className="setrow";
+      const k=`${ei}_${s}`, v=saved[k]||{};
+      row.innerHTML=`<span class="tiny">S${s}</span>
+        <input data-key="${k}" data-field="weight" inputmode="decimal" placeholder="lb" value="${v.weight||""}">
+        <input data-key="${k}" data-field="reps" inputmode="numeric" placeholder="reps" value="${v.reps||""}">
+        <input data-key="${k}" data-field="done" class="done" type="checkbox" ${v.done?"checked":""}>`;
+      wrap.appendChild(row);
+    }
+    list.appendChild(wrap);
+  })
+}
+
+function saveWorkout(){
+  const data={};
+  document.querySelectorAll("#exerciseList input").forEach(i=>{
+    const k=i.dataset.key; data[k]=data[k]||{};
+    data[k][i.dataset.field]=i.type==="checkbox"?i.checked:i.value;
+  });
+  localStorage.setItem(storageKey(),JSON.stringify(data));
+  const count=+(localStorage.getItem("comeback_completed")||0)+1;
+  localStorage.setItem("comeback_completed",count);
+  document.getElementById("saveMsg").textContent="Saved ✓";
+  renderProgress();
+}
+
+function renderPlan(){
+  const p=plans[currentWeek];
+  document.getElementById("weekDetails").innerHTML=`
+    <h3>Week ${currentWeek}: ${p.phase}</h3>
+    <p><b>Lift:</b> ${p.days.length} days — ${p.days.join(" • ")}</p>
+    <p><b>Cardio:</b> ${p.cardio}</p>
+    <p><b>Steps:</b> ${p.steps.toLocaleString()} / day</p>
+    <p><b>Effort:</b> ${currentWeek<=2?"Keep 3–4 reps in reserve. No grinding.":currentWeek<=4?"Keep 2–3 reps in reserve.":"Most sets 1–3 reps in reserve; never sacrifice form."}</p>
+    ${currentWeek===8?'<p class="note">Use ~80–90% of your Week-7 loads or remove one set from each exercise if fatigue is building.</p>':''}`;
+}
+
+function saveCheckin(){
+  const entry={date:new Date().toLocaleDateString(),weight:weight.value,waist:waist.value,protein:protein.value,steps:steps.value,notes:notes.value};
+  const hist=JSON.parse(localStorage.getItem("comeback_checkins")||"[]");hist.unshift(entry);
+  localStorage.setItem("comeback_checkins",JSON.stringify(hist.slice(0,60)));
+  weight.value=waist.value=protein.value=steps.value=notes.value="";
+  renderProgress();
+}
+
+function renderProgress(){
+  const hist=JSON.parse(localStorage.getItem("comeback_checkins")||"[]");
+  const completed=+(localStorage.getItem("comeback_completed")||0);
+  const target= currentWeek<=4 ? currentWeek*3 : 12+(currentWeek-4)*4;
+  const pct=Math.min(100,Math.round(completed/Math.max(target,1)*100));
+  consistencyBar.style.width=pct+"%";
+  consistencyText.textContent=`${completed} workouts logged • ${pct}% of scheduled sessions through Week ${currentWeek}`;
+  history.innerHTML=hist.slice(0,8).map(h=>`<div class="exercise"><b>${h.date}</b><div class="tiny">
+    ${h.weight?`Weight ${h.weight} lb • `:""}${h.waist?`Waist ${h.waist}" • `:""}${h.protein?`Protein ${h.protein}g • `:""}${h.steps?`${h.steps} steps`:""}
+    </div>${h.notes?`<div class="muted" style="margin-top:5px">${h.notes}</div>`:""}</div>`).join("") || '<p class="muted">No check-ins yet.</p>';
+}
+
+function renderAll(){
+  buildWeekSelectors(); buildWorkoutSelect(); renderWorkout(); renderPlan(); renderProgress();
+  weekMetric.textContent=currentWeek; stepMetric.textContent=plans[currentWeek].steps.toLocaleString();
+  phaseText.textContent=`Week ${currentWeek} • ${plans[currentWeek].phase} • ${plans[currentWeek].cardio}`;
+}
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");document.getElementById(b.dataset.tab).classList.add("active");
+});
+saveWorkout.onclick=saveWorkout;
+saveCheckin.onclick=saveCheckin;
+resetBtn.onclick=()=>{if(confirm("Delete all saved workout and check-in data?")){localStorage.clear();currentWeek=1;renderAll()}};
+
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;installBtn.style.display="block"});
+installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display="none"}};
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"))}
+renderAll();
+</script>
+</body>
+</html>
